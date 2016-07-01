@@ -14,14 +14,19 @@ use Illuminate\Support\Facades\Password;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Dingo\Api\Exception\ValidationHttpException;
 
+use App\Role;
+use App\Permission;
+
 class AuthController extends Controller
 {
     use Helpers;
 
     public function login(Request $request)
     {
-        $credentials = $request->only(['email', 'password']);
+        //$credentials = $request->only(['email', 'password']);
 
+        $credentials=(array)$request->json()->all();
+        
         $validator = Validator::make($credentials, [
             'email' => 'required',
             'password' => 'required',
@@ -44,10 +49,12 @@ class AuthController extends Controller
 
     public function signup(Request $request)
     {
-        $signupFields = Config::get('boilerplate.signup_fields');
-        $hasToReleaseToken = Config::get('boilerplate.signup_token_release');
+        // $signupFields = Config::get('boilerplate.signup_fields');
+        // $hasToReleaseToken = Config::get('boilerplate.signup_token_release');
 
-        $userData = $request->only($signupFields);
+        // $userData = $request->only($signupFields);
+         
+         $userData= (array)$request->json()->all();
 
         $validator = Validator::make($userData, Config::get('boilerplate.signup_fields_rules'));
 
@@ -72,7 +79,9 @@ class AuthController extends Controller
 
     public function recovery(Request $request)
     {
-        $validator = Validator::make($request->only('email'), [
+          $userData= (array)$request->json()->all();
+
+        $validator = Validator::make($userData->only('email'), [
             'email' => 'required'
         ]);
 
@@ -94,9 +103,11 @@ class AuthController extends Controller
 
     public function reset(Request $request)
     {
-        $credentials = $request->only(
-            'email', 'password', 'password_confirmation', 'token'
-        );
+        $credentials= (array)$request->json()->all();
+
+        // $credentials = $request->only(
+        //     'email', 'password', 'password_confirmation', 'token'
+        // );
 
         $validator = Validator::make($credentials, [
             'token' => 'required',
@@ -123,5 +134,45 @@ class AuthController extends Controller
             default:
                 return $this->response->error('could_not_reset_password', 500);
         }
+    }
+    
+    public function assignRole(Request $request){
+
+        $user = User::where('email', '=', $request->input('email'))->first();
+
+        $role = Role::where('name', '=', $request->input('role'))->first();
+        //$user->attachRole($request->input('role'));
+        $user->roles()->attach($role->id);
+
+        return $this->response()->created();
+    }
+
+    public function createRole(Request $request){
+         //$credentials= (array)$request->json()->all();
+
+        $role = new Role();
+        $role->name = $request->input('name');
+        $role->save();
+
+        return $this->response()->created("role has been created");
+
+    }
+
+    public function createPermission(Request $request){
+
+        $viewUsers = new Permission();
+        $viewUsers->name = $request->input('name');
+        $viewUsers->save();
+
+        return $this->response()->created();
+
+    }
+
+    public function attachPermission(Request $request){
+        $role = Role::where('name', '=', $request->input('role'))->first();
+        $permission = Permission::where('name', '=', $request->input('name'))->first();
+        $role->attachPermission($permission);
+
+        return $this->response()->created();
     }
 }
