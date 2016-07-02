@@ -357,6 +357,7 @@ class ComposerStaticInit242b22d3b6274ab30557880c45df7727
     public static $classMap = array (
         'CallbackFilterIterator' => __DIR__ . '/..' . '/symfony/polyfill-php54/Resources/stubs/CallbackFilterIterator.php',
         'CreatePasswordResetsTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_100000_create_password_resets_table.php',
+        'CreateTodoTable' => __DIR__ . '/../..' . '/database/migrations/2016_07_02_000715_create_todo_table.php',
         'CreateUsersTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_000000_create_users_table.php',
         'DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeds/DatabaseSeeder.php',
         'EntrustSetupTables' => __DIR__ . '/../..' . '/database/migrations/2016_07_01_014835_entrust_setup_tables.php',

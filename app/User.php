@@ -36,4 +36,9 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = \Hash::make($value);
     }
+     public function todos()
+    {
+        return $this->hasMany('App\Todo');
+    }
+
 }
